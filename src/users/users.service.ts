@@ -1,8 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/database';
+import { hashPassword } from 'src/utils';
 import { Repository } from 'typeorm';
 import { CreateUserDTO } from './dto/CreateUser.dto';
+import { UpdateUserDTO } from './dto/UpdateUser.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,33 +13,43 @@ export class UsersService {
     private readonly usersEntity: Repository<Users>,
   ) {}
 
-  async createUser(body: CreateUserDTO) {
-    const data = await this.usersEntity.save(body);
+  createUser(body: CreateUserDTO) {
+    const password = hashPassword(body.password);
+    const newData = { ...body, password };
+    const data = this.usersEntity.save(newData);
     return data;
   }
 
-  async getAllUsers() {
-    const data = await this.usersEntity.find({});
+  getAllUsers() {
+    const data = this.usersEntity.find({});
     if (!data) {
       throw new NotFoundException('Users not found');
     }
     return data;
   }
 
-  async getUserById(id: string) {
-    const data = await this.usersEntity.findOneBy({ id: Number(id) });
+  getUserById(id: string) {
+    const data = this.usersEntity.findOneBy({ id: Number(id) });
     if (!data) {
       throw new NotFoundException('User not found');
     }
     return data;
   }
 
-  async updateUser(id: string, body: CreateUserDTO) {
-    const data = await this.getUserById(id);
+  getUserByUsername(username: string) {
+    const data = this.usersEntity.findOneBy({ username });
+    if (!data) {
+      throw new NotFoundException('User not found');
+    }
+    return data;
+  }
+
+  updateUser(id: string, body: UpdateUserDTO) {
+    const data = this.getUserById(id);
     if (!data) {
       throw new NotFoundException('User not found');
     }
     const updatedData = { ...data, ...body };
-    return await this.usersEntity.save(updatedData);
+    return this.usersEntity.save(updatedData);
   }
 }

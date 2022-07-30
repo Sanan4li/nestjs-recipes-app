@@ -6,6 +6,7 @@ import { CategoryService } from './category/category.service';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 import entities from './database';
 
@@ -23,6 +24,7 @@ import entities from './database';
     }),
     CategoryModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

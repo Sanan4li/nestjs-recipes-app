@@ -13,7 +13,7 @@ export class Users {
   @Column({
     nullable: false,
   })
-  name: string;
+  username: string;
 
   @Column({
     nullable: false,
